@@ -343,10 +343,20 @@ tbody td { padding: 12px 14px; color: var(--text-1); vertical-align: middle; }
 .search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text-4); display: flex; pointer-events: none; }
 
 /* ─── Login ───────────────────────────────────────────────────────────────── */
-.login-page { min-height: 100vh; display: flex; background: var(--bg); }
+.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); padding: 20px; }
+
+.login-container {
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
 
 .login-left {
-  width: 440px; flex-shrink: 0;
+  width: 420px; flex-shrink: 0;
   background: var(--blue);
   display: flex; flex-direction: column;
   justify-content: center; align-items: center;
@@ -364,8 +374,8 @@ tbody td { padding: 12px 14px; color: var(--text-1); vertical-align: middle; }
 .ll-feature { display: flex; align-items: center; gap: 12px; color: #fff; font-size: 14px; font-weight: 500; }
 .ll-badge { display: inline-block; background: rgba(255,255,255,.1); padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; color: #fff; border: 1px solid rgba(255,255,255,.2); }
 
-.login-right { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-2); }
+.login-right { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+.login-card { width: 100%; max-width: 380px; }
 
 .lc-header { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
 .lc-icon { width: 44px; height: 44px; background: var(--blue); border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(37,99,235,.2); }
