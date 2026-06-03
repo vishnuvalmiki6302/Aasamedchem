@@ -1,22 +1,20 @@
-// src/pages/LoginPage.jsx
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FlaskConical, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { FlaskConical, Mail, Lock, User, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
 const FEATURES = [
   'Track chemicals and lab equipment',
   'Role-based access for admins and sellers',
-  'Auto unit conversion  (g → kg, mL → L)',
+  'Auto unit conversion (g → kg, mL → L)',
   'Real-time order status management',
 ];
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'seller' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,15 +25,21 @@ export default function LoginPage() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!form.email || !form.password) { setError('Please fill in both fields.'); return; }
+    if (!form.name || !form.email || !form.password) {
+      setError('Please fill in all fields.');
+      return;
+    }
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', form);
+      const { data } = await api.post('/auth/register', form);
+      // Auto login after registration
       login(data.user, data.token);
       navigate(data.user.role === 'admin' ? '/admin/dashboard' : '/seller/shop');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password.');
-    } finally { setLoading(false); }
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -86,11 +90,11 @@ export default function LoginPage() {
             {/* Card header */}
             <div className="lc-header">
               <div className="lc-icon">
-                <FlaskConical size={20} color="#fff" strokeWidth={2} />
+                <User size={20} color="#fff" strokeWidth={2} />
               </div>
               <div>
-                <h1 className="lc-title">Welcome back</h1>
-                <p className="lc-sub">Sign in to your AASAMED account</p>
+                <h1 className="lc-title">Create Account</h1>
+                <p className="lc-sub">Join AASAMED today</p>
               </div>
             </div>
 
@@ -104,6 +108,24 @@ export default function LoginPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} noValidate>
               <div className="lc-field">
+                <label htmlFor="name" className="lc-label">Full Name</label>
+                <div className="lc-input-wrap">
+                  <User size={14} className="lc-input-icon" />
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    className="lc-input"
+                    placeholder="John Doe"
+                    value={form.name}
+                    onChange={handleChange}
+                    autoComplete="name"
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div className="lc-field">
                 <label htmlFor="email" className="lc-label">Email address</label>
                 <div className="lc-input-wrap">
                   <Mail size={14} className="lc-input-icon" />
@@ -116,7 +138,6 @@ export default function LoginPage() {
                     value={form.email}
                     onChange={handleChange}
                     autoComplete="email"
-                    autoFocus
                   />
                 </div>
               </div>
@@ -130,35 +151,52 @@ export default function LoginPage() {
                     name="password"
                     type="password"
                     className="lc-input"
-                    placeholder="Enter your password"
+                    placeholder="Create a strong password"
                     value={form.password}
                     onChange={handleChange}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                   />
                 </div>
               </div>
 
+              <div className="lc-field">
+                <label htmlFor="role" className="lc-label">Account Role</label>
+                <div className="lc-input-wrap">
+                  <Shield size={14} className="lc-input-icon" />
+                  <select
+                    id="role"
+                    name="role"
+                    className="lc-input"
+                    value={form.role}
+                    onChange={handleChange}
+                  >
+                    <option value="seller">Seller (Order Chemicals)</option>
+                    <option value="admin">Admin (Manage Inventory)</option>
+                  </select>
+                </div>
+              </div>
+
               <button
-                id="login-submit-btn"
+                id="register-submit-btn"
                 type="submit"
                 className="lc-submit"
                 disabled={loading}
               >
                 {loading
-                  ? <><span className="spinner" /> Signing in…</>
-                  : 'Sign In'}
+                  ? <><span className="spinner" /> Creating account…</>
+                  : 'Create Account'}
               </button>
             </form>
 
-            <div className="lc-divider"><span>New to AASAMED?</span></div>
+            <div className="lc-divider"><span>Already have an account?</span></div>
             <div style={{ textAlign: 'center' }}>
               <button
                 type="button"
                 className="lc-demo-btn"
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/login')}
                 style={{ width: '100%' }}
               >
-                Create an account
+                Sign in instead
               </button>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import LoginPage       from './pages/LoginPage';
+import RegisterPage    from './pages/RegisterPage';
 import AdminDashboard  from './pages/admin/AdminDashboard';
 import AdminProducts   from './pages/admin/AdminProducts';
 import AdminOrders     from './pages/admin/AdminOrders';
@@ -21,6 +22,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/products"  element={<ProtectedRoute adminOnly><AdminProducts /></ProtectedRoute>} />
