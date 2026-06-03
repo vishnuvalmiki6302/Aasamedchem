@@ -1,22 +1,25 @@
 // utils/conversion.js — Unit Conversion Utility (Backend)
 // This is the SINGLE source of truth for unit conversions in the backend.
-// The frontend has an identical copy in frontend/src/utils/conversion.js
 
 /**
  * Converts a quantity from the given unit to the product's base unit.
  *
- * Base units:
- *   Weight → grams (g)
- *   Volume → milliliters (ml)
- *   Count  → items (item)
- *
- * Examples:
- *   convertToBaseUnit(2, 'kg')   → 2000   (2 kg = 2000 g)
- *   convertToBaseUnit(500, 'ml') → 500    (already in base unit)
- *   convertToBaseUnit(1.5, 'l')  → 1500   (1.5 L = 1500 mL)
- *   convertToBaseUnit(10, 'g')   → 10     (already in base unit)
+ * @param {number} qty - The quantity to convert (must be a positive number)
+ * @param {string} unit - The unit to convert from (e.g., 'kg', 'l', 'g', 'ml', 'item')
+ * @returns {number} The quantity converted to the base unit
+ * @throws {Error} If the quantity is invalid or the unit is unknown
  */
 const convertToBaseUnit = (qty, unit) => {
+  // Input validation
+  const numericQty = Number(qty);
+  if (isNaN(numericQty) || numericQty <= 0) {
+    throw new Error(`Invalid quantity provided: ${qty}. Must be a positive number.`);
+  }
+
+  if (!unit || typeof unit !== 'string') {
+    throw new Error('Unit must be a valid string.');
+  }
+
   // Conversion factors: how many BASE UNITS equal 1 of this unit
   const factors = {
     g: 1,       // 1 gram = 1 gram (base)
@@ -26,13 +29,13 @@ const convertToBaseUnit = (qty, unit) => {
     item: 1,    // 1 item = 1 item (base)
   };
 
-  const factor = factors[unit.toLowerCase()];
+  const factor = factors[unit.toLowerCase().trim()];
 
   if (!factor) {
-    throw new Error(`Unknown unit: ${unit}`);
+    throw new Error(`Unknown or unsupported unit: "${unit}"`);
   }
 
-  return qty * factor;
+  return numericQty * factor;
 };
 
 module.exports = { convertToBaseUnit };
