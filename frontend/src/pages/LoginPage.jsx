@@ -76,6 +76,10 @@ export default function LoginPage() {
             <div className="ll-badge">
               Chemical Lab Management System
             </div>
+            
+            <div style={{ marginTop: '20px', fontSize: '12px', opacity: 0.8 }}>
+              🚀 Successfully Deployed on Vercel
+            </div>
           </div>
         </div>
 
