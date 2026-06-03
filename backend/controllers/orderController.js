@@ -71,7 +71,8 @@ const getAllOrders = async (req, res) => {
     const orders = await Order.find()
       .populate('user', 'name email')           // Include seller name and email
       .populate('items.product', 'name sku baseUnit') // Include product details
-      .sort({ createdAt: -1 });                 // Newest orders first
+      .sort({ createdAt: -1 })                  // Newest orders first
+      .lean();                                  // Optimize performance
 
     res.json(orders);
   } catch (error) {
@@ -86,7 +87,8 @@ const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
       .populate('items.product', 'name sku baseUnit')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();                                  // Optimize performance
 
     res.json(orders);
   } catch (error) {
