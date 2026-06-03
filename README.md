@@ -17,9 +17,7 @@
 9. [Code Structure](#9-code-structure)
 10. [API Reference](#10-api-reference)
 11. [Running the Project Locally](#11-running-the-project-locally)
-12. [UX Decisions](#12-ux-decisions)
-13. [Git Workflow](#13-git-workflow)
-14. [Interview Q&A — Reasoning Behind Key Decisions](#14-interview-qa--reasoning-behind-key-decisions)
+12. [Deployment to Vercel](#12-deployment-to-vercel)
 
 ---
 
@@ -517,94 +515,4 @@ This repository is pre-configured with `vercel.json` files in both the frontend 
    - `VITE_API_URL`: Your deployed backend URL + `/api` (e.g., `https://aasamed-api.vercel.app/api`).
 5. Click **Deploy**. Vercel will use `frontend/vercel.json` to handle React Router SPA rewrites properly.
 
----
-```
-http://localhost:5173
-```
 
----
-
-## 12. UX Decisions
-
-### Why combine Products + Place Order into one "Shop" page?
-
-Traditional systems make sellers navigate to a separate "Create Order" form where they must already know product IDs or names. This is inefficient. The shop page lets sellers browse the catalog and build their order simultaneously — the same pattern used by every modern e-commerce site. The cart panel is sticky, so it's always visible without scrolling.
-
-### Why category tabs instead of a dropdown filter?
-
-Labs have a small number of clear categories (Chemical, Solvent, Glassware, Reagent). Tabs give instant visual feedback about available categories and one-click filtering — a dropdown requires two clicks and hides the options.
-
-### Why live price calculation in the cart?
-
-Sellers need to know costs before submitting. Showing the total updating in real-time (without API calls) removes uncertainty and reduces order errors. This works because the conversion logic is available client-side.
-
-### Why store `convertedQuantity` and `lineTotal` in the DB?
-
-Price auditability. If a product's price changes tomorrow, historical orders should still reflect what the price was at the time of ordering. Recomputing from current product prices would corrupt order history.
-
-### Why JWT over sessions?
-
-JWT is stateless — the server doesn't need to store session data. This makes the backend horizontally scalable (any server can verify any token with the secret). Token expiry (7 days) balances security and usability.
-
-### Why bcryptjs with 10 salt rounds?
-
-10 salt rounds means 2^10 = 1024 bcrypt iterations. This makes brute-force attacks impractical while keeping login response time under 100ms. The hashing is done in a Mongoose pre-save hook, ensuring passwords are **always** hashed regardless of which code path creates the user.
-
-### Why Mongoose 8 async hooks without `next()`?
-
-Mongoose 8 changed async middleware: for `async` pre-save hooks, you simply `return` instead of calling `next()`. Calling `next()` on an async hook throws `"next is not a function"`. We fixed this during development — it's a subtle breaking change from Mongoose 7.
-
----
-
-## 13. Git Workflow
-
-```
-main branch — initial full commit with complete working codebase
-
-Recommended future workflow:
-├── feature/admin-dashboard
-├── feature/unit-conversion
-├── feature/cart-system
-└── fix/mongoose-async-hook
-```
-
-### Commit Messages Convention
-- `feat:` — new feature
-- `fix:` — bug fix
-- `refactor:` — code change without feature/fix
-- `docs:` — documentation update
-- `style:` — CSS/UI changes
-
----
-
-## 14. Interview Q&A — Reasoning Behind Key Decisions
-
-**Q: Why do you store prices in base units instead of per-kg or per-L?**
-
-> Because the conversion factor would differ per product category. A "per-kg" price for a solid and a "per-L" price for a liquid can't be compared or processed uniformly. Storing everything in grams and milliliters means the formula `convertedQty × pricePerBaseUnit` always works, regardless of product type.
-
-**Q: How does the unit conversion prevent pricing errors?**
-
-> The backend never trusts the frontend's calculated `lineTotal`. It always recomputes `convertedQuantity` and `lineTotal` from the submitted `orderedQuantity` and `orderedUnit`. Even if someone manipulates the browser and sends a fake lineTotal, the server will override it with the correct value.
-
-**Q: How is admin visibility of orders ensured securely?**
-
-> The `getAllOrders` endpoint uses the `requireAdmin` middleware which checks `req.user.role === 'admin'` after JWT verification. A seller's JWT will always have `role: 'seller'` embedded, so even with a valid token, they'll get a 403 Forbidden response when hitting admin endpoints.
-
-**Q: What happens if the same product is already in the cart?**
-
-> Clicking "Add to Cart" again does nothing if the product is already in the cart (we check `if (cart[product._id]) return`). The button label also changes to "Added" to communicate this state. The seller modifies quantity directly in the cart.
-
-**Q: Why is the conversion utility duplicated in frontend and backend?**
-
-> It's intentional, not a code smell. The frontend copy enables live price preview without API round-trips. The backend copy is the authoritative calculation. If we used only a backend calculation, the seller would need to submit the form to see the price — bad UX. The two copies are identical and simple enough that drift is unlikely.
-
-**Q: How would you scale this to production?**
-
-> 1. Add indexes on `email` (already unique), `sku` (already unique), and `Order.user` for faster seller queries. 2. Move the JWT secret and MongoDB URI to a secrets manager (AWS Secrets Manager, etc.). 3. Add rate limiting to auth endpoints. 4. Restrict CORS to the production domain. 5. Move to a proper frontend CDN with environment variables for the API URL.
-
----
-
-## License
-
-Built for educational/demonstration purposes.
