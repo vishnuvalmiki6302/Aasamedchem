@@ -39,25 +39,31 @@ export default function LoginPage() {
     <div className="login-page">
       {/* Left panel */}
       <div className="login-left">
-        <div className="login-left-logo">
-          <div className="login-left-icon"><FlaskConical size={22} color="#fff" /></div>
-          <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>AASAMED</span>
-        </div>
-        <div className="login-left-title">Lab Inventory &amp;<br />Order Management</div>
-        <div className="login-left-sub">
-          Streamline your laboratory supply chain with smart ordering and real-time tracking.
-        </div>
-        {[
-          'Track chemicals and lab equipment',
-          'Role-based access for admins and sellers',
-          'Auto unit conversion (g, kg, mL, L)',
-          'Real-time order status management',
-        ].map(f => (
-          <div key={f} className="login-feature">
-            <div className="login-feature-dot" />
-            {f}
+        <div style={{ maxWidth: 340, width: '100%' }}>
+          <div className="login-left-logo" style={{ justifyContent: 'center' }}>
+            <div className="login-left-icon"><FlaskConical size={22} color="#fff" /></div>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>AASAMED</span>
           </div>
-        ))}
+          <div className="login-left-title" style={{ textAlign: 'center' }}>
+            Lab Inventory &amp;<br />Order Management
+          </div>
+          <div className="login-left-sub" style={{ textAlign: 'center' }}>
+            Streamline your laboratory supply chain with smart ordering and real-time tracking.
+          </div>
+          <div style={{ marginTop: 28 }}>
+            {[
+              'Track chemicals and lab equipment',
+              'Role-based access for admins and sellers',
+              'Auto unit conversion (g, kg, mL, L)',
+              'Real-time order status management',
+            ].map(f => (
+              <div key={f} className="login-feature">
+                <div className="login-feature-dot" />
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Right panel */}

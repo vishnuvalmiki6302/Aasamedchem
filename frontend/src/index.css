@@ -349,7 +349,8 @@ tbody td { padding: 12px 14px; color: var(--text-1); vertical-align: middle; }
   width: 420px; flex-shrink: 0;
   background: var(--blue);
   padding: 52px 44px;
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
 }
 @media (max-width: 860px) { .login-left { display: none; } }
 
