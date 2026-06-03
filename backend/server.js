@@ -24,9 +24,17 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-// Health check route
+// Health check route for Vercel deployment monitoring
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    dbConnected: mongoose.connection.readyState === 1
+  });
+});
+
 app.get('/', (req, res) => {
-  res.json({ message: ' Backend server is running Fine!' });
+  res.json({ message: 'AASAMED Backend server is running fine!' });
 });
 
 // ─── Connect to MongoDB and Start Server ──────────────────────────────────────
