@@ -1,10 +1,17 @@
-// src/pages/LoginPage.jsx — Clean login, no emojis
+// src/pages/LoginPage.jsx
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FlaskConical, Mail, Lock, AlertCircle } from 'lucide-react';
+import { FlaskConical, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+
+const FEATURES = [
+  'Track chemicals and lab equipment',
+  'Role-based access for admins and sellers',
+  'Auto unit conversion  (g → kg, mL → L)',
+  'Real-time order status management',
+];
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -13,7 +20,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
 
-  const handleChange = e => { setForm(p => ({ ...p, [e.target.name]: e.target.value })); setError(''); };
+  const handleChange = e => {
+    setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+    setError('');
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -24,7 +34,7 @@ export default function LoginPage() {
       login(data.user, data.token);
       navigate(data.user.role === 'admin' ? '/admin/dashboard' : '/seller/shop');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Check your credentials.');
+      setError(err.response?.data?.message || 'Invalid email or password.');
     } finally { setLoading(false); }
   };
 
@@ -37,85 +47,138 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      {/* Left panel */}
+
+      {/* ── Left Panel ────────────────────────────────── */}
       <div className="login-left">
-        <div style={{ maxWidth: 340, width: '100%' }}>
-          <div className="login-left-logo" style={{ justifyContent: 'center' }}>
-            <div className="login-left-icon"><FlaskConical size={22} color="#fff" /></div>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>AASAMED</span>
+        <div className="login-left-inner">
+
+          {/* Logo */}
+          <div className="ll-logo">
+            <div className="ll-logo-icon">
+              <FlaskConical size={24} color="#fff" strokeWidth={2} />
+            </div>
+            <span className="ll-logo-text">AASAMED</span>
           </div>
-          <div className="login-left-title" style={{ textAlign: 'center' }}>
+
+          {/* Headline */}
+          <div className="ll-headline">
             Lab Inventory &amp;<br />Order Management
           </div>
-          <div className="login-left-sub" style={{ textAlign: 'center' }}>
+          <div className="ll-sub">
             Streamline your laboratory supply chain with smart ordering and real-time tracking.
           </div>
-          <div style={{ marginTop: 28 }}>
-            {[
-              'Track chemicals and lab equipment',
-              'Role-based access for admins and sellers',
-              'Auto unit conversion (g, kg, mL, L)',
-              'Real-time order status management',
-            ].map(f => (
-              <div key={f} className="login-feature">
-                <div className="login-feature-dot" />
-                {f}
+
+          {/* Feature list */}
+          <div className="ll-features">
+            {FEATURES.map(f => (
+              <div key={f} className="ll-feature">
+                <CheckCircle size={14} color="rgba(255,255,255,0.7)" strokeWidth={2} />
+                <span>{f}</span>
               </div>
             ))}
+          </div>
+
+          {/* Decorative pill badge */}
+          <div className="ll-badge">
+            Chemical Lab Management System
           </div>
         </div>
       </div>
 
-      {/* Right panel */}
+      {/* ── Right Panel ───────────────────────────────── */}
       <div className="login-right">
         <div className="login-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <div style={{ width: 36, height: 36, background: 'var(--blue)', borderRadius: 'var(--r-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-              <FlaskConical size={18} />
+
+          {/* Card header */}
+          <div className="lc-header">
+            <div className="lc-icon">
+              <FlaskConical size={20} color="#fff" strokeWidth={2} />
             </div>
             <div>
-              <div className="login-title" style={{ fontSize: 18, marginBottom: 0 }}>Welcome back</div>
-              <div className="login-sub" style={{ marginBottom: 0, fontSize: 12 }}>Sign in to AASAMED</div>
+              <h1 className="lc-title">Welcome back</h1>
+              <p className="lc-sub">Sign in to your AASAMED account</p>
             </div>
           </div>
 
+          {/* Error alert */}
           {error && (
-            <div className="alert alert-error">
+            <div className="alert alert-error" style={{ marginBottom: 16 }}>
               <AlertCircle size={14} /> {error}
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} noValidate>
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email address</label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={13} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-4)' }} />
-                <input id="email" name="email" type="email" className="form-input" placeholder="you@example.com"
-                  value={form.email} onChange={handleChange} style={{ paddingLeft: 30 }} autoComplete="email" autoFocus />
+            <div className="lc-field">
+              <label htmlFor="email" className="lc-label">Email address</label>
+              <div className="lc-input-wrap">
+                <Mail size={14} className="lc-input-icon" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  className="lc-input"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  autoComplete="email"
+                  autoFocus
+                />
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
-              <div style={{ position: 'relative' }}>
-                <Lock size={13} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-4)' }} />
-                <input id="password" name="password" type="password" className="form-input" placeholder="Password"
-                  value={form.password} onChange={handleChange} style={{ paddingLeft: 30 }} autoComplete="current-password" />
+            <div className="lc-field">
+              <label htmlFor="password" className="lc-label">Password</label>
+              <div className="lc-input-wrap">
+                <Lock size={14} className="lc-input-icon" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  className="lc-input"
+                  placeholder="Enter your password"
+                  value={form.password}
+                  onChange={handleChange}
+                  autoComplete="current-password"
+                />
               </div>
             </div>
 
-            <button id="login-submit-btn" type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginTop: 4 }}>
-              {loading ? <><span className="spinner" /> Signing in</> : 'Sign In'}
+            <button
+              id="login-submit-btn"
+              type="submit"
+              className="lc-submit"
+              disabled={loading}
+            >
+              {loading
+                ? <><span className="spinner" /> Signing in…</>
+                : 'Sign In'}
             </button>
           </form>
 
-          <div className="divider-text">Demo access</div>
-          <div className="demo-row">
-            <button id="fill-admin-btn" className="btn btn-outline btn-full btn-sm" onClick={() => fillDemo('admin')}>Admin Login</button>
-            <button id="fill-seller-btn" className="btn btn-outline btn-full btn-sm" onClick={() => fillDemo('seller')}>Seller Login</button>
+          {/* Demo shortcuts */}
+          <div className="lc-divider"><span>Quick demo access</span></div>
+          <div className="lc-demo-row">
+            <button
+              id="fill-admin-btn"
+              className="lc-demo-btn"
+              onClick={() => fillDemo('admin')}
+            >
+              Admin
+            </button>
+            <button
+              id="fill-seller-btn"
+              className="lc-demo-btn"
+              onClick={() => fillDemo('seller')}
+            >
+              Seller
+            </button>
           </div>
+
+          <p className="lc-hint">Demo password: <code>password123</code></p>
         </div>
       </div>
+
     </div>
   );
 }
