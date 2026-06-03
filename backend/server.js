@@ -45,11 +45,15 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected successfully');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+      });
+    }
   })
   .catch((error) => {
     console.error('❌ MongoDB connection failed:', error.message);
-    process.exit(1); // Exit if DB connection fails
   });
+
+// Export the Express API for Vercel Serverless Functions
+module.exports = app;
