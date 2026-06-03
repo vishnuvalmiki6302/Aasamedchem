@@ -14,7 +14,9 @@ const getAllProducts = async (req, res) => {
       ? { name: { $regex: search, $options: 'i' } } // Case-insensitive search
       : {};
 
-    const products = await Product.find(filter).sort({ createdAt: -1 });
+    // .lean() improves performance by returning plain JS objects
+    // since we only need to read the data, not mutate and save it.
+    const products = await Product.find(filter).sort({ createdAt: -1 }).lean();
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch products', error: error.message });
